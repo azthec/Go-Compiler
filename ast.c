@@ -1,14 +1,15 @@
 #include <stdlib.h> // for malloc
-#include <string.h> // memcpy
 #include "ast.h" // AST header
+#include <string.h> // for memcpy
 
-// Operação para inteiro
+
 Expr* ast_integer(int v) {
   Expr* node = (Expr*)malloc(sizeof(Expr));
   node->type = E_INTEGER;
   node->c.value = v;
   return node;
 }
+
 
 Expr* ast_variable(char* id){
   Expr* node = (Expr*) malloc(sizeof(Expr));
@@ -17,7 +18,7 @@ Expr* ast_variable(char* id){
   return node;
 }
 
-//Operação para operações(soma,subtração,multiplicação e divisão)
+
 Expr* ast_operation(Expr* left, int operator, Expr* right) {
   Expr* node = (Expr*) malloc(sizeof(Expr));
   node->type = E_OPERATION;
@@ -27,7 +28,7 @@ Expr* ast_operation(Expr* left, int operator, Expr* right) {
   return node;
 }
 
-//Atribuição
+
 Command* ast_atrib(char* id,Expr* e){
     Command* node = (Command*) malloc(sizeof(Command));
     node->type = CMD_ATRIB;
@@ -36,23 +37,26 @@ Command* ast_atrib(char* id,Expr* e){
     return node;
 }
 
-Command* ast_while(Expr* condition,CommandList* content){
+
+Command* ast_while(Expr* condition,CommandList* commands){
     Command* node = (Command*) malloc(sizeof(Command));
     node->type = CMD_WHILE;
     node->c.while_exp.condition = condition;
-    node->c.while_exp.content = content;
+    node->c.while_exp.commands = commands;
     return node;
 }
 
-Command* ast_for(Command* left, Expr* right, Expr* increment, CommandList* content){
+
+Command* ast_for(Command* atrib, Expr* condition, Expr* increment, CommandList* commands){
   Command* node = (Command*) malloc(sizeof(Command));
   node->type = CMD_FOR;
-  node->c.for_exp.right = right;
-  node->c.for_exp.left = left;
+  node->c.for_exp.right = condition;
+  node->c.for_exp.left = atrib;
   node->c.for_exp.increment = increment;
-  node->c.for_exp.content = content;
+  node->c.for_exp.commands = commands;
   return node;
 }
+
 
 Command* ast_ifs (Expr* e, CommandList* list, Command* elses) {
   Command* node =  (Command*) malloc(sizeof(Command));
@@ -63,19 +67,22 @@ Command* ast_ifs (Expr* e, CommandList* list, Command* elses) {
   return node;
 }
 
+
 Command* ast_elses (CommandList* elses) {
   Command* node = (Command*) malloc(sizeof(Command));
   node->type = CMD_ELSES;
-  node->c.liste = elses;  
+  node->c.elses = elses;  
   return node;
 }
 
-Command* ast_disp(Expr* toShow){
+
+Command* ast_disp(Expr* e){
     Command* node = (Command*) malloc(sizeof(Expr));
     node->type = CMD_DIS;
-    node->c.condition = toShow;
+    node->c.condition = e;
     return node;
 }
+
 
 Command* ast_inp(char* id){
     Command* node = (Command*) malloc(sizeof(Command));
@@ -83,6 +90,7 @@ Command* ast_inp(char* id){
     memcpy(node->c.input.identifier, id, VARSIZE);
     return node;
 }
+
 
 CommandList* ast_CommandList(Command* cmd,CommandList* next) {
   CommandList* node = (CommandList*) malloc(sizeof(CommandList));

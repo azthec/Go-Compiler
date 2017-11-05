@@ -2,12 +2,8 @@
 #include "parser.h"
 
 void printTree(CommandList* root, int level);
-void print_expr(Expr* expr);
-void printCommand(Command* cmd, int flag);
-
-//-----------------------------------------------------------------
-// Main
-//-----------------------------------------------------------------
+void print_expr(Expr* expr, int depth);
+void printCommand(Command* cmd, int depth, int flag);
 
 int main(int argc, char *argv[]){
 	--argc; ++argv;
@@ -26,10 +22,6 @@ int main(int argc, char *argv[]){
   return 0;
 }
 
-//-----------------------------------------------------------------
-// Function that returns symbol by his token code
-//-----------------------------------------------------------------
-
 void returnSymbol(int operator){
 	switch(operator){
 		case SUM: printf(" + "); break;
@@ -45,18 +37,16 @@ void returnSymbol(int operator){
 		case MODUL: printf(" % "); break;
 		case AND: printf(" && "); break;
 		case OR: printf(" || "); break;
+        case NOT: printf("! "); break;
 	}
 }
 
-//-----------------------------------------------------------------
-// Function that prints each Command
-//-----------------------------------------------------------------
-
-void printCommand(Command* cmd, int flag){
+void printCommand(Command* cmd, int depth,int flag){
+	printf("%d| ", depth);
 	switch(cmd->type){
 			case CMD_ATRIB:{
 				printf("%s := ",cmd->c.attrib.identifier);
-				print_expr(cmd->c.attrib.e);
+				print_expr(cmd->c.attrib.e, depth+1);
 				printf(";\n");
 				break;
 			}
@@ -64,22 +54,22 @@ void printCommand(Command* cmd, int flag){
 				printf("for ");
 				Command* cmdd = cmd->c.for_exp.left;
 				printf("%s:=",cmdd->c.attrib.identifier);
-				print_expr(cmdd->c.attrib.e);	
+				print_expr(cmdd->c.attrib.e, depth+1);	
 				printf("; ");
-				print_expr(cmd->c.for_exp.right);
+				print_expr(cmd->c.for_exp.right, depth+1);
 				printf("; ");
-				print_expr(cmd->c.for_exp.increment);
+				print_expr(cmd->c.for_exp.increment, depth+1);
 				printf(" {\n");
-				printTree(cmd->c.for_exp.content,1);			
-				printf("}\n");
+				printTree(cmd->c.for_exp.commands,depth+1);			
+				printf("%d| }\n", depth);
 				break;
 			}
 			case CMD_WHILE:{
 				printf("for ");
-				print_expr(cmd->c.while_exp.condition);
+				print_expr(cmd->c.while_exp.condition, depth+1);
 				printf(" {\n");
-				printTree(cmd->c.while_exp.content,1);
-				printf("}\n");
+				printTree(cmd->c.while_exp.commands,depth+1);
+				printf("%d| }\n", depth);
 				break;
 			}
 			case CMD_IFS:{
@@ -87,24 +77,24 @@ void printCommand(Command* cmd, int flag){
 			      printf("if ");                        
 			    else
 			      printf("} elseif ");
-			    print_expr(cmd->c.ifs.e);
+			    print_expr(cmd->c.ifs.e, depth+1);
 			    printf("{\n");
-			    printTree(cmd->c.ifs.list,1);
+			    printTree(cmd->c.ifs.list,depth+1);
 			    if(cmd->c.ifs.elses) {              
-			      printCommand(cmd->c.ifs.elses, 1);
+			      printCommand(cmd->c.ifs.elses,depth, 1);
 			    }
 			    if(!flag)
-			    	printf("}\n");
+			    	printf("%d| }\n", depth);
 			    break;
 			}
 			case CMD_ELSES: {
-		    	printf("{ else\n");
-			    printTree(cmd->c.liste,1);  
+		    	printf("} else\n");
+			    printTree(cmd->c.elses,depth+1);  
 				break;
 			}
 			case CMD_DIS:{
 				printf("Sprint(");
-				print_expr(cmd->c.condition);
+				print_expr(cmd->c.condition, depth+1);
 				printf(");\n");
 				break;
 			}
@@ -116,37 +106,26 @@ void printCommand(Command* cmd, int flag){
 	}
 }
 
-//-----------------------------------------------------------------
-// Function that prints a CommandListuence
-//-----------------------------------------------------------------
-
-void printTree(CommandList* root, int level)
+void printTree(CommandList* root, int depth)
 {
 	while(root!=NULL)
 	{
-		printCommand(root->cmd,0);
+		printCommand(root->cmd,depth,0);
 		root=root->next;
 	}
 }
 
-//-----------------------------------------------------------------
-// Function that prints each Expression
-//-----------------------------------------------------------------
-
-void print_expr(Expr* expr){
+void print_expr(Expr* expr, int depth){
 	switch(expr->type){
 		case E_INTEGER:{
 			printf("%d ",expr->c.value);
 			break;
 		}
 		case E_OPERATION:{
-			if(expr->c.op.operator != NOT) {
-				print_expr(expr->c.op.left);
-				returnSymbol(expr->c.op.operator);
-			} else {
-				printf("! ");
-			}
-			print_expr(expr->c.op.right);
+			if(expr->c.op.operator != NOT)
+				print_expr(expr->c.op.left, depth+1);
+            returnSymbol(expr->c.op.operator);			
+            print_expr(expr->c.op.right, depth+1);
 			break;
 		}
 		case E_IDENTIF:{
