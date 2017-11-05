@@ -8,7 +8,7 @@ int yyline = 1;
 %}
 %option noyywrap
 
-VAR		[a-zA-Z]
+VAR		[a-zA-Z_]
 DIGIT	\-?[0-9]+
 %%
 
@@ -43,6 +43,7 @@ DIGIT	\-?[0-9]+
 "=="		{return COMP;}
 "~="		{return DIF;}
 "Sprint(\"\%d\","		{return SPRINT;}
+"Sscan(\"\%d\"," { return SSCAN; }
 {VAR}+		{yylval.identificador=strdup(yytext);return VARIABLE;}
 .			{yyerror("Caracter inválido\n");}
 %%

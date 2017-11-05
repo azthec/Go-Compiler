@@ -81,19 +81,19 @@ void printCommand(Command* cmd, int flag){
 			    if(!flag)
 			      printf("if ");                        
 			    else
-			      printf("elseif ");
+			      printf("} elseif ");
 			    print_expr(cmd->c.ifs.e);
-			    printf("\n");
+			    printf("{\n");
 			    printTree(cmd->c.ifs.list,1);
 			    if(cmd->c.ifs.elses) {              
 			      printCommand(cmd->c.ifs.elses, 1);
 			    }
 			    if(!flag)
-			    	printf("end\n");
+			    	printf("}\n");
 			    break;
 			}
 			case CMD_ELSES: {
-		    	printf("else\n");
+		    	printf("{ else\n");
 			    printTree(cmd->c.liste,1);  
 				break;
 			}
@@ -104,8 +104,7 @@ void printCommand(Command* cmd, int flag){
 				break;
 			}
 			case CMD_INP:{
-				printf("%s",cmd->c.identifier);
-				printf("=input();\n");
+				printf("Sscan(%s);\n",cmd->c.input.identifier);
 				break;
 			}
 			default: yyerror("Unkown Command");

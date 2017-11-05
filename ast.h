@@ -20,6 +20,7 @@ Command* ast_while(Expr* condition, CommandSeq* content);
 Command* ast_for(Command* left, Expr* right, Expr* increment, CommandSeq* content);
 //Command* ast_input(char* identifier);
 Command* ast_disp(Expr* toShow);
+Command* ast_inp(char* identifier);
 CommandSeq* ast_CommandSeq(Command* cmd,CommandSeq* next);
 
 
@@ -77,6 +78,9 @@ struct _Command{
 			char identifier[VARSIZE];
 			Expr* e;
 		} attrib;
+        struct{
+            char identifier[VARSIZE];
+        } input;
 	} c;
 };
 

@@ -83,6 +83,13 @@ Command* ast_disp(Expr* toShow){
     return node;
 }
 
+Command* ast_inp(char* id){
+    Command* node = (Command*) malloc(sizeof(Command));
+    node->type = CMD_INP;
+    memcpy(node->c.input.identifier, id, VARSIZE);
+    return node;
+}
+
 CommandSeq* ast_CommandSeq(Command* cmd,CommandSeq* next) {
   CommandSeq* node = (CommandSeq*) malloc(sizeof(CommandSeq));
   node->cmd = cmd;

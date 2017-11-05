@@ -18,7 +18,7 @@
 %token IF ELSE ELSEIF FOR WHILE DOTS END
 %token DISP INP OB CB SEMI_COL
 %token TRUE FALSE
-%token FMAIN LBRACKET RBRACKET SPRINT
+%token FMAIN LBRACKET RBRACKET SPRINT SSCAN
 
 %left SUB SUM
 %left MUL DIV
@@ -36,6 +36,7 @@
 %type<num> NUM
 %type<identificador> VARIABLE
 %type<expr> Expr
+%type<expr> BoolExpr
 %type<cmdSeq> commandSeq
 %type<cmd> cmd
 %type<cmd> ifs
@@ -54,10 +55,11 @@ commandSeq:
 	;
 
 cmd:  atrib
-    | IF Expr LBRACKET commandSeq ifs                    {$$ = ast_ifs($2,$4,$5);}
-    | FOR Expr LBRACKET commandSeq RBRACKET     {$$ = ast_while($2,$4);}
+    | IF BoolExpr LBRACKET commandSeq ifs                    {$$ = ast_ifs($2,$4,$5);}
+    | FOR BoolExpr LBRACKET commandSeq RBRACKET     {$$ = ast_while($2,$4);}
     | SPRINT Expr CB SEMI_COL                  {$$ = ast_disp($2);}
-    | FOR atrib Expr SEMI_COL Expr LBRACKET commandSeq RBRACKET              {$$ = ast_for($2,$3,$5,$7);}
+    | SSCAN VARIABLE CB SEMI_COL                  {$$ = ast_inp($2);}
+    | FOR atrib BoolExpr SEMI_COL Expr LBRACKET commandSeq RBRACKET              {$$ = ast_for($2,$3,$5,$7);}
     ;
 
 atrib: VARIABLE ATRIB Expr SEMI_COL     {$$ = ast_atrib($1,$3);}
@@ -67,27 +69,31 @@ lim: NUM            {$$ = ast_integer($1);}
     |VARIABLE       {$$ = ast_variable($1);}
     ;
 
-ifs: RBRACKET ELSEIF Expr LBRACKET commandSeq ifs            { $$ = ast_ifs($3, $5, $6); }
+ifs: RBRACKET ELSEIF BoolExpr LBRACKET commandSeq ifs            { $$ = ast_ifs($3, $5, $6); }
     | RBRACKET ELSE LBRACKET commandSeq RBRACKET                { $$ = ast_elses($4); }
     | RBRACKET                                   { $$ = NULL; }
     ;
 
-Expr: Expr SUM Expr             {$$ = ast_operation($1,SUM,$3);} 
+Expr: 
+    NUM                       {$$ = ast_integer($1);}
+    | VARIABLE                  {$$ = ast_variable($1);}
+    | OB Expr CB                {$$ = $2;}
+    | Expr SUM Expr             {$$ = ast_operation($1,SUM,$3);} 
     | Expr SUB Expr             {$$ = ast_operation($1,SUB,$3);}
     | Expr MUL Expr             {$$ = ast_operation($1,MUL,$3);}
     | Expr DIV Expr             {$$ = ast_operation($1,DIV,$3);}
+    ;
+
+BoolExpr:
+    TRUE                      {$$ = ast_integer(1);}
+    | FALSE                     {$$ = ast_integer(0);}
+    | OB BoolExpr CB                {$$ = $2;}
     | Expr GET Expr             {$$ = ast_operation($1,GET,$3);}
     | Expr LET Expr             {$$ = ast_operation($1,LET,$3);}
     | Expr LT Expr              {$$ = ast_operation($1,LT,$3);}
     | Expr GT Expr              {$$ = ast_operation($1,GT,$3);}
     | Expr DIF Expr             {$$ = ast_operation($1,DIF,$3);}
     | Expr COMP Expr            {$$ = ast_operation($1,COMP,$3);}
-    | INP                       {$$ = ast_input();}
-    | OB Expr CB                {$$ = $2;}
-    | FALSE                     {$$ = ast_integer(0);}
-    | TRUE                      {$$ = ast_integer(1);}
-    | NUM                       {$$ = ast_integer($1);}
-    | VARIABLE                  {$$ = ast_variable($1);}
     ;
 
 %%
