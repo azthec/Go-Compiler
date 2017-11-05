@@ -1,0 +1,7 @@
+func main() {
+x = 1 + 1 + 1;
+x = 3;
+ylul = 4;
+if x>1 y=3; end
+if x<1 y=x+1; elseif x>1 y=1*x +b; else x=3; end
+}
