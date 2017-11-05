@@ -17,12 +17,6 @@ Expr* ast_variable(char* id){
   return node;
 }
 
-Expr* ast_input(){
-  Expr* node = (Expr*) malloc(sizeof(Expr));
-  node->type = E_INP;
-  return node;
-}
-
 //Operação para operações(soma,subtração,multiplicação e divisão)
 Expr* ast_operation(Expr* left, int operator, Expr* right) {
   Expr* node = (Expr*) malloc(sizeof(Expr));
@@ -42,7 +36,7 @@ Command* ast_atrib(char* id,Expr* e){
     return node;
 }
 
-Command* ast_while(Expr* condition,CommandSeq* content){
+Command* ast_while(Expr* condition,CommandList* content){
     Command* node = (Command*) malloc(sizeof(Command));
     node->type = CMD_WHILE;
     node->c.while_exp.condition = condition;
@@ -50,7 +44,7 @@ Command* ast_while(Expr* condition,CommandSeq* content){
     return node;
 }
 
-Command* ast_for(Command* left, Expr* right, Expr* increment, CommandSeq* content){
+Command* ast_for(Command* left, Expr* right, Expr* increment, CommandList* content){
   Command* node = (Command*) malloc(sizeof(Command));
   node->type = CMD_FOR;
   node->c.for_exp.right = right;
@@ -60,7 +54,7 @@ Command* ast_for(Command* left, Expr* right, Expr* increment, CommandSeq* conten
   return node;
 }
 
-Command* ast_ifs (Expr* e, CommandSeq* list, Command* elses) {
+Command* ast_ifs (Expr* e, CommandList* list, Command* elses) {
   Command* node =  (Command*) malloc(sizeof(Command));
   node->type = CMD_IFS;
   node->c.ifs.e = e;
@@ -69,7 +63,7 @@ Command* ast_ifs (Expr* e, CommandSeq* list, Command* elses) {
   return node;
 }
 
-Command* ast_elses (CommandSeq* elses) {
+Command* ast_elses (CommandList* elses) {
   Command* node = (Command*) malloc(sizeof(Command));
   node->type = CMD_ELSES;
   node->c.liste = elses;  
@@ -90,8 +84,8 @@ Command* ast_inp(char* id){
     return node;
 }
 
-CommandSeq* ast_CommandSeq(Command* cmd,CommandSeq* next) {
-  CommandSeq* node = (CommandSeq*) malloc(sizeof(CommandSeq));
+CommandList* ast_CommandList(Command* cmd,CommandList* next) {
+  CommandList* node = (CommandList*) malloc(sizeof(CommandList));
   node->cmd = cmd;
   node-> next= next;
 }

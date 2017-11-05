@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "parser.h"
 
-void printTree(CommandSeq* root, int level);
+void printTree(CommandList* root, int level);
 void print_expr(Expr* expr);
 void printCommand(Command* cmd, int flag);
 
@@ -19,7 +19,9 @@ int main(int argc, char *argv[]){
     }
   } 
   if (yyparse() == 0) {
-     printTree(root,1);
+    printf("func main() {\n");
+    printTree(root,1);
+    printf("}\n");
   }
   return 0;
 }
@@ -40,6 +42,9 @@ void returnSymbol(int operator){
 		case LET: printf(" <= "); break;
 		case DIF: printf(" ~= "); break;
 		case COMP: printf(" == "); break;
+		case MODUL: printf(" % "); break;
+		case AND: printf(" && "); break;
+		case OR: printf(" || "); break;
 	}
 }
 
@@ -112,10 +117,10 @@ void printCommand(Command* cmd, int flag){
 }
 
 //-----------------------------------------------------------------
-// Function that prints a commandSequence
+// Function that prints a CommandListuence
 //-----------------------------------------------------------------
 
-void printTree(CommandSeq* root, int level)
+void printTree(CommandList* root, int level)
 {
 	while(root!=NULL)
 	{
@@ -135,8 +140,12 @@ void print_expr(Expr* expr){
 			break;
 		}
 		case E_OPERATION:{
-			print_expr(expr->c.op.left);
-			returnSymbol(expr->c.op.operator);
+			if(expr->c.op.operator != NOT) {
+				print_expr(expr->c.op.left);
+				returnSymbol(expr->c.op.operator);
+			} else {
+				printf("! ");
+			}
 			print_expr(expr->c.op.right);
 			break;
 		}
