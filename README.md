@@ -12,6 +12,7 @@ Cláudia Correia 201304727
 ## example output
 depth| command
 
+```
 func main() {
 1| Sprint(varXYZ);
 1| x := 1234 ;
@@ -67,3 +68,4 @@ func main() {
 2| x := 5 ;
 1| }
 }
+```
