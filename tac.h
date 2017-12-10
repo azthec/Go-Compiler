@@ -1,16 +1,18 @@
 #ifndef __tac_h__
 #define __tac_h__
-#define VARSIZE 64
-
-typedef struct _Address Address;
-typedef struct _Codline Codline;
-typedef struct _ListCL ListCL;
-typedef struct _Pair Pair;
-
 
 typedef enum {
-    EMPTY, INT, VAR
+    Empty, Int, Var
 } AddressKind;
+
+//typedef for address structure
+struct _Address {
+    AddressKind operator;
+    union {
+        int value;
+        char* var;
+    } content;
+};
 
 typedef enum { 
     TAC_SUM, TAC_SUB, TAC_MUL, TAC_DIV, TAC_MODUL,
@@ -22,45 +24,43 @@ typedef enum {
     TAC_SW, TAC_LI, TAC_LW
  } OpKind;
 
-//typedef for address structure
-struct _Address {
-    AddressKind operator;
-    union {
-        int value;
-        char* var;
-    } content;
-};
+
 
 struct _Codline{
-  Opkind op;
-  struct Adress* addr1,* addr2,* addr3;
+  OpKind op;
+  struct _Address* addr1,* addr2,* addr3;
 };
 
 struct _ListCL { 
-  struct Codline * line;
-  struct ListCL* next;
+  struct _Codline * line;
+  struct _ListCL* next;
 };
 
 struct _Pair{
-  struct Adress* address;
-  struct ListCL * list;
+  struct _Address* address;
+  struct _ListCL * list;
 };
 
+typedef struct _Address Address;
+typedef struct _Codline Codline;
+typedef struct _ListCL ListCL;
+typedef struct _Pair Pair;
 
+//tac structure and operations
 Address* tac_empty();
 Address* tac_integer(int a);
 Address* tac_variable(char* c);
 Codline* tac_expr(OpKind op, Address* t0, Address* t1, Address* t2);
 ListCL* tac_list(Codline* node, ListCL* list);
-ListCL* tac_append(Codline* list1, Codline* list2);
+ListCL* tac_append(ListCL* list1, ListCL* list2);
 Pair* tac_pair(Address* addr, ListCL* list);
 
-/*
-TODO
+//compilation functions
+Pair* compile_exp(Expr* expr);
+ListCL* compile_if(Command* cmd, char* endif);
+ListCL* compile_cmd(Command* cmd);
 
-Pair* CompileExpr(Expr* e);
-IList* CompileCom(Command* c);
-IList* CompileIfs(Command* c,char* E);
-IList* compile_tac(CommandList* root, char** vars);
-*/
+//begin compiling
+ListCL* compile_tac(CommandList* root, char** varsin);
+
 #endif
