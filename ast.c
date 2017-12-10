@@ -4,7 +4,7 @@
 
 
 Expr* ast_integer(int v) {
-  Expr* node = (Expr*)malloc(sizeof(Expr));
+  Expr* node = (Expr*) malloc(sizeof(Expr));
   node->type = E_INTEGER;
   node->c.value = v;
   return node;

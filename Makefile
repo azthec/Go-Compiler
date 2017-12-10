@@ -1,7 +1,7 @@
 
-OBJS=scanner.o parser.o ast.o interpreter.o
+OBJS=scanner.o parser.o ast.o tac.o print_mips.o
 INTERM=scanner.c parser.c parser.h
-PROGRAM=./interpreter
+PROGRAM=./print_mips
 CFLAGS=-g 
 
 all: $(PROGRAM)

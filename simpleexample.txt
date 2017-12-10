@@ -1,0 +1,33 @@
+func main() {
+  Sprint("%d", varXYZ);
+  x := 1234;
+  Sprint("%d", 1+1+1+1);
+  Sprint("%d", 1+1+2+3+5+8+13+21);
+  Sscan("%d", xyZED);
+  x := 1313;
+  x := 1 + 1 + 1;
+  x := 3;
+  ylul := 4;
+  if x>1 {
+    y:=3;
+  }
+  if x<1 {
+    y:=x+1;
+  } elseif x>1 {
+    y:=1*x +b;
+  } else {
+    x:=3;
+  }
+  if x<1 {
+    x:=1;
+  } elseif 1<x {
+    y:=2;
+    xzs:=123;
+  }
+  for x<4 {
+    x:=4;
+  }
+  for x:=4; x<4; i+1 {
+    x:=5;
+  }
+}
