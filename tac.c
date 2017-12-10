@@ -125,7 +125,9 @@ Pair* compile_exp(Expr* expr) {
                 case DIV:
                     auxLine = tac_expr(TAC_DIV, auxAddr, auxA->address, auxB->address);
                     break;
-                //TODO case MODUL:
+                case MODUL:
+                    auxLine = tac_expr(TAC_MODUL, auxAddr, auxA->address, auxB->address);
+                    break;
                 case GT:
                     auxLine = tac_expr(TAC_GT, auxAddr, auxA->address, auxB->address);
                     break;
@@ -144,9 +146,15 @@ Pair* compile_exp(Expr* expr) {
                 case COMP:
                     auxLine = tac_expr(TAC_COMP, auxAddr, auxA->address, auxB->address);
                     break;
-                //TODO case AND:
-                //TODO case OR:
-                //TODO case NOT:
+                case AND:
+                    auxLine = tac_expr(TAC_AND, auxAddr, auxA->address, auxB->address);
+                    break;
+                case OR:
+                    auxLine = tac_expr(TAC_OR, auxAddr, auxA->address, auxB->address);
+                    break;
+                case NOT:
+                    auxLine = tac_expr(TAC_NOT, auxAddr, auxA->address, auxB->address);
+                    break;
                 default: yyerror("Invalid operand received while compiling operation.\n");
             }
 
@@ -168,20 +176,16 @@ ListCL* compile_if(Command* cmd, char* endif) {
     CommandList* help = NULL;
 
     switch(cmd->type) {
-        
         case CMD_IFS: //do if and ifelses stuff
             if(!endif) //we the OG if statement
                 endif = new_endif_label();
             labelA = tac_variable(new_label());
-            labelB = tac_variable(new_label());
 
             auxPar = compile_exp(cmd->c.ifs.e);
 
             auxLA = tac_append(auxPar->list,tac_list(tac_expr(TAC_IF,auxPar->address,labelA,NULL),NULL));
-            auxLA = tac_append(auxLA,tac_list(tac_expr(TAC_GOTO,labelB,NULL,NULL),NULL));
 
             //labelA section
-            auxLA = tac_append(auxLA,tac_list(tac_expr(TAC_LABEL,labelA,NULL,NULL),NULL));
             help = cmd->c.ifs.list; //code inside the if
             while(help!=NULL) {
                 auxLB = compile_cmd(help->cmd);
@@ -190,8 +194,7 @@ ListCL* compile_if(Command* cmd, char* endif) {
             }
             auxLA = tac_append(auxLA, tac_list(tac_expr(TAC_GOTO, tac_variable(endif), NULL, NULL),NULL));
 
-            //labelB section
-            auxLA = tac_append(auxLA, tac_list(tac_expr(TAC_LABEL,labelB,NULL,NULL),NULL));
+            auxLA = tac_append(auxLA, tac_list(tac_expr(TAC_LABEL,labelA,NULL,NULL),NULL));
             if(cmd->c.ifs.elses) {
                 auxLA = tac_append(auxLA, compile_if(cmd->c.ifs.elses, endif));
             } else {
@@ -247,11 +250,8 @@ ListCL* compile_cmd(Command* cmd) {
             auxPar = compile_exp(cmd->c.while_exp.condition);
             labelA = tac_variable(new_label());
             labelB = tac_variable(new_label());
-            labelC = tac_variable(new_label());
             auxLA = tac_append(tac_list(tac_expr(TAC_LABEL,labelA,NULL,NULL),NULL),auxPar->list);
-            auxLA = tac_append(auxLA, tac_list(tac_expr(TAC_IF,auxPar->address,labelC,NULL),NULL));
-            auxLA = tac_append(auxLA, tac_list(tac_expr(TAC_GOTO,labelB,NULL,NULL), NULL));
-            auxLA = tac_append(auxLA, tac_list(tac_expr(TAC_LABEL,labelC,NULL,NULL),NULL));
+            auxLA = tac_append(auxLA, tac_list(tac_expr(TAC_IF,auxPar->address,labelB,NULL),NULL));
             help = cmd->c.while_exp.commands;
             while(help != NULL) {
                 auxLB = compile_cmd(help->cmd);
@@ -268,7 +268,6 @@ ListCL* compile_cmd(Command* cmd) {
             auxPar = compile_exp(cmd->c.for_exp.right);
             labelA = tac_variable(new_label());
             labelB = tac_variable(new_label());
-            labelC = tac_variable(new_label());
 
             auxReg = tac_variable(new_tvariable());
             auxReg2 = tac_variable(new_tvariable());
@@ -283,9 +282,7 @@ ListCL* compile_cmd(Command* cmd) {
             auxLA = tac_append(auxLA, auxPar->list);
             auxLA = tac_append(auxLA, tac_list(tac_expr(TAC_LW,auxReg,auxVar,NULL), NULL));
             auxLA = tac_append(auxLA, tac_list(tac_expr(TAC_LET,auxReg2,auxReg,auxPar->address), NULL));
-            auxLA = tac_append(auxLA, tac_list(tac_expr(TAC_IF,auxReg2,labelC,NULL), NULL));
-            auxLA = tac_append(auxLA, tac_list(tac_expr(TAC_GOTO,labelB,NULL,NULL), NULL));
-            auxLA = tac_append(auxLA, tac_list(tac_expr(TAC_LABEL,labelC,NULL,NULL),NULL));
+            auxLA = tac_append(auxLA, tac_list(tac_expr(TAC_IF,auxReg2,labelB,NULL), NULL));
 
             //body
             help = cmd->c.for_exp.commands;
