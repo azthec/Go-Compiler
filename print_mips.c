@@ -82,7 +82,7 @@ void compilers_assemble(ListCL* list, char** vars){
                 printf("    or %s, %s, %s\n", str1, str2, str3);
                 break;
             case TAC_NOT:
-                printf("    nor %s\n", str1);
+                printf("    nor %s, %s, %s\n", str1, str1, str1);
                 break;
             case TAC_ATRIB:
                 printf("    add %s, %s, $0\n", str1, str2);
