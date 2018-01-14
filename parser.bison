@@ -6,8 +6,11 @@
 %token SPRINT SSCAN
 
 // Operator associativity & precedence
-%left SUM SUB MUL DIV MODUL
-%left GT LT GET LET DIF COMP AND OR NOT ATRIB
+%left SUM SUB 
+%left MUL DIV MODUL
+%left GT LT GET LET DIF COMP 
+%left AND OR NOT 
+%left ATRIB
 
 // Root-level grammar symbol
 %start program;
