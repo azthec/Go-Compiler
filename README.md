@@ -7,10 +7,6 @@ rename corresponding namefile to desired output
 > make
 > ./print_mips megaexample.txt
 
-## authors
-Rui Balau 201103891
-Cláudia Correia 201304727
-
 ## example output for print_ast.c
 depth| command
 
