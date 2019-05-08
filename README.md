@@ -1,5 +1,7 @@
 # Go!
-This is a full lexer-parser-compiler implemented in C, generates AST, TAC and MIPS output.
+This is a full lexer-parser-compiler implemented in C for the core Go language syntax.
+
+Generates AST, TAC and MIPS output.
 
 ## usage
 rename corresponding namefile to desired output
